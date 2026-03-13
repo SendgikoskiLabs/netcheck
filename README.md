@@ -1,21 +1,28 @@
 # NetCheck
 
-A simple network diagnostics tool.
+NetCheck is a lightweight network diagnostics tool developed by SendgikoskiLabs.
 
-Tests:
+It performs quick tests for:
+
 - Ping latency
 - DNS resolution
 - HTTP connectivity
 
 Example:
-$ python src/netcheck.py
+  $ python src/netcheck.py
+        SendgikoskiLabs NetCheck v1.0
 
-SendgikoskiLabs Network Check
+        ==============================
+         SendgikoskiLabs NetCheck
+        ==============================
 
-Host: google.com
-DNS: 64.233.176.139
-Ping latency: None ms
-HTTP status: 200
-$
+        Target Host : google.com
+        Resolved IP : 64.233.176.102
+        Ping Latency: 37.9 ms  [OK]
+        HTTP Status : 200  [OK]
 
-Part of the SendgikoskiLabs toolkit.
+        Diagnostics completed in 0.77 seconds
+
+        ==============================
+
+This project is the first component of the upcoming NetWatch network diagnostics toolkit.
