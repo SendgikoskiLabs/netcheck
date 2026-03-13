@@ -3,15 +3,19 @@ import socket
 import requests
 import time
 import sys
+import csv
 from datetime import datetime
 
-VERSION = "1.2"
+VERSION = "1.3"
 
 HOSTS = [
     "google.com",
     "cloudflare.com",
     "github.com"
 ]
+
+LOG_FILE = "logs/netcheck_log.csv"
+
 
 def ping_test(host):
 
@@ -62,6 +66,7 @@ def watch_mode():
             latency = ping_test(host)
 
             if latency:
+                log_latency(host, latency)
                 print(f"[{timestamp}] {host:<15} {latency} ms")
             else:
                 print(f"[{timestamp}] {host:<15} FAILED")
@@ -69,7 +74,19 @@ def watch_mode():
         print()
 
         time.sleep(30)
-        
+
+
+def log_latency(host, latency):
+
+    from datetime import datetime
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(LOG_FILE, "a", newline="") as f:
+        writer = csv.writer(f)
+
+        writer.writerow([timestamp, host, latency])
+
 
 def main():
 
