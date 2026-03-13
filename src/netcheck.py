@@ -1,8 +1,11 @@
 import subprocess
 import socket
 import requests
+import time
+import sys
+from datetime import datetime
 
-VERSION = "1.1"
+VERSION = "1.2"
 
 HOSTS = [
     "google.com",
@@ -46,9 +49,33 @@ def http_test(url):
         return None
 
 
+def watch_mode():
+
+    print("Monitoring network every 30 seconds...\n")
+
+    while True:
+
+        timestamp = datetime.now().strftime("%H:%M:%S")
+
+        for host in HOSTS:
+
+            latency = ping_test(host)
+
+            if latency:
+                print(f"[{timestamp}] {host:<15} {latency} ms")
+            else:
+                print(f"[{timestamp}] {host:<15} FAILED")
+
+        print()
+
+        time.sleep(30)
+        
+
 def main():
 
-    import time
+    if "--watch" in sys.argv:
+        watch_mode()
+        return
 
     print(f"SendgikoskiLabs NetCheck v{VERSION}\n")
 
