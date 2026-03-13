@@ -41,18 +41,37 @@ def http_test(url):
 
 def main():
 
+    import time
+
     host = "google.com"
 
-    print("\nSendgikoskiLabs Network Check\n")
+    print("\n==============================")
+    print(" SendgikoskiLabs NetCheck ")
+    print("==============================\n")
+
+    start = time.time()
 
     latency = ping_test(host)
     ip = dns_test(host)
     http_status = http_test("https://google.com")
 
-    print(f"Host: {host}")
-    print(f"DNS: {ip}")
-    print(f"Ping latency: {latency} ms")
-    print(f"HTTP status: {http_status}")
+    print(f"Target Host : {host}")
+    print(f"Resolved IP : {ip}")
+
+    if latency:
+        print(f"Ping Latency: {latency} ms  [OK]")
+    else:
+        print("Ping Latency: FAILED")
+
+    if http_status == 200:
+        print(f"HTTP Status : {http_status}  [OK]")
+    else:
+        print(f"HTTP Status : {http_status}  [ERROR]")
+
+    elapsed = round(time.time() - start, 2)
+
+    print("\nDiagnostics completed in", elapsed, "seconds")
+    print("\n==============================\n")
 
 
 if __name__ == "__main__":
