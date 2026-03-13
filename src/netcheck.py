@@ -2,6 +2,13 @@ import subprocess
 import socket
 import requests
 
+VERSION = "1.1"
+
+HOSTS = [
+    "google.com",
+    "cloudflare.com",
+    "github.com"
+]
 
 def ping_test(host):
 
@@ -43,30 +50,35 @@ def main():
 
     import time
 
-    host = "google.com"
+    print(f"SendgikoskiLabs NetCheck v{VERSION}\n")
 
-    print("\n==============================")
+    print("==============================")
     print(" SendgikoskiLabs NetCheck ")
     print("==============================\n")
 
     start = time.time()
 
-    latency = ping_test(host)
-    ip = dns_test(host)
-    http_status = http_test("https://google.com")
+    for host in HOSTS:
 
-    print(f"Target Host : {host}")
-    print(f"Resolved IP : {ip}")
+        print(f"Target Host : {host}")
 
-    if latency:
-        print(f"Ping Latency: {latency} ms  [OK]")
-    else:
-        print("Ping Latency: FAILED")
+        ip = dns_test(host)
+        latency = ping_test(host)
+        http_status = http_test(f"https://{host}")
 
-    if http_status == 200:
-        print(f"HTTP Status : {http_status}  [OK]")
-    else:
-        print(f"HTTP Status : {http_status}  [ERROR]")
+        print(f"Resolved IP : {ip}")
+
+        if latency:
+            print(f"Ping Latency: {latency} ms  [OK]")
+        else:
+            print("Ping Latency: FAILED")
+
+        if http_status == 200:
+            print(f"HTTP Status : {http_status}  [OK]")
+        else:
+            print(f"HTTP Status : {http_status}  [ERROR]")
+
+        print("----------------------------------")
 
     elapsed = round(time.time() - start, 2)
 
