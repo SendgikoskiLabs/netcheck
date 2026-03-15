@@ -4,9 +4,10 @@ import requests
 import time
 import sys
 import csv
+import re
 from datetime import datetime
 
-VERSION = "1.3"
+VERSION = "1.5"
 
 HOSTS = [
     "google.com",
@@ -15,6 +16,27 @@ HOSTS = [
 ]
 
 LOG_FILE = "logs/netcheck_log.csv"
+TRACEROUTE_LOG = "logs/traceroute_log.txt"
+
+LATENCY_SPIKE_THRESHOLD = 100  # milliseconds
+#LATENCY_SPIKE_THRESHOLD = 20  # milliseconds -- for testing
+SPIKE_COOLDOWN = 300  # seconds
+last_spike_time = {}
+
+SLOW_HOP_THRESHOLD = 120  # milliseconds
+#SLOW_HOP_THRESHOLD = 15  # milliseconds -- for testing
+
+
+def init_log():
+
+    import os
+    import csv
+
+    if not os.path.exists(LOG_FILE):
+
+        with open(LOG_FILE, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["timestamp", "host", "latency"])
 
 
 def ping_test(host):
@@ -32,7 +54,7 @@ def ping_test(host):
                 latency = line.split("time=")[1].split()[0]
                 return latency
 
-    return None
+    return float(latency)
 
 
 def dns_test(host):
@@ -66,7 +88,30 @@ def watch_mode():
             latency = ping_test(host)
 
             if latency:
+                
+                latency = float(latency)
+                
                 log_latency(host, latency)
+                
+                if latency > LATENCY_SPIKE_THRESHOLD:
+                    
+                    now = time.time()
+                    last = last_spike_time.get(host, 0)
+                    
+                    if now - last > SPIKE_COOLDOWN:
+
+                        print(f"\n⚠️  LATENCY SPIKE: {host} = {latency} ms")
+                        print("Running traceroute...\n")
+                        
+                        trace_output = run_traceroute(host)
+                        log_traceroute(host, trace_output)
+                        analyze_traceroute(trace_output)
+                        
+                        last_spike_time[host] = now
+                    
+                    else:
+                        print(f"Spike suppressed for {host} (cooldown active)")
+                
                 print(f"[{timestamp}] {host:<15} {latency} ms")
             else:
                 print(f"[{timestamp}] {host:<15} FAILED")
@@ -88,7 +133,70 @@ def log_latency(host, latency):
         writer.writerow([timestamp, host, latency])
 
 
+def run_traceroute(host):
+
+    try:
+        result = subprocess.run(
+            ["traceroute", "-m", "10", host],   # limit to 10 hops
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+
+        return result.stdout
+
+    except Exception as e:
+        return f"Traceroute failed: {e}"
+
+
+def log_traceroute(host, output):
+
+    from datetime import datetime
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(TRACEROUTE_LOG, "a") as f:
+
+        f.write(f"\n===== {timestamp} | {host} =====\n")
+        f.write(output)
+        f.write("\n")
+
+
+def analyze_traceroute(trace_output):
+
+    slowest_hop = None
+    slowest_latency = 0
+    filtered_hops = 0
+
+    for line in trace_output.splitlines():
+
+        latencies = re.findall(r"(\d+\.\d+)\s*ms", line)
+
+        if latencies:
+
+            values = [float(x) for x in latencies]
+            latency = max(values)
+
+            if latency > slowest_latency:
+                slowest_latency = latency
+                slowest_hop = line.strip()
+
+        if "* * *" in line:
+            filtered_hops += 1
+        
+    if filtered_hops:
+        print(f"⚠️ {filtered_hops} hops did not respond (likely filtered by ISP)")
+    
+    if slowest_hop and slowest_latency > SLOW_HOP_THRESHOLD:
+
+        print("\n⚠️ Possible network bottleneck detected:")
+        print(slowest_hop)
+        print(f"Latency: {slowest_latency} ms\n")
+
+
 def main():
+    
+    init_log()
 
     if "--watch" in sys.argv:
         watch_mode()
