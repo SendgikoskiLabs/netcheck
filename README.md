@@ -2,7 +2,7 @@
 
 **A professional, self-contained network diagnostic and monitoring tool.**
 
-[![Version](https://img.shields.io/badge/version-4.0-89b4fa?style=flat-square)](https://github.com/SendgikoskiLabs/netcheck_v3)
+[![Version](https://img.shields.io/badge/version-4.0-89b4fa?style=flat-square)](https://github.com/SendgikoskiLabs/netcheck)
 [![Python](https://img.shields.io/badge/python-3.8%2B-cba6f7?style=flat-square)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-a6e3a1?style=flat-square)]()
 [![License](https://img.shields.io/badge/license-MIT-f9e2af?style=flat-square)]()
@@ -97,8 +97,8 @@ Built by [Alan Sendgikoski](https://www.linkedin.com/in/alansendgikoski/) as par
   👉 Download the code
   
      ```bash
-    git clone https://github.com/SendgikoskiLabs/netcheck_v3.git
-    cd netcheck_v3
+    git clone https://github.com/SendgikoskiLabs/netcheck.git
+    cd netcheck
     ```
 
   👉 Create a virtual environment (optional but recommended) and install modules
@@ -121,8 +121,8 @@ Built by [Alan Sendgikoski](https://www.linkedin.com/in/alansendgikoski/) as par
   👉 Download the code
   
      ```bash
-    git clone https://github.com/SendgikoskiLabs/netcheck_v3.git
-    cd netcheck_v3
+    git clone https://github.com/SendgikoskiLabs/netcheck.git
+    cd netcheck
     ```
 
   👉 Create a virtual environment (optional but recommended) and install modules
@@ -147,8 +147,8 @@ Built by [Alan Sendgikoski](https://www.linkedin.com/in/alansendgikoski/) as par
   👉 Download the code. Open Windows Terminal and run the following commands:
   
      ```PowerShell
-    git clone https://github.com/SendgikoskiLabs/netcheck_v3.git
-    cd netcheck_v3
+    git clone https://github.com/SendgikoskiLabs/netcheck.git
+    cd netcheck
     ```
     
   👉 Create a virtual environment using Command Prompt (optional but recommended) and install modules
